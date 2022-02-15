@@ -26,14 +26,15 @@ Please see [raspberrypi.org/software/](https://www.raspberrypi.org/software/) or
 I installed a lot of other packages to have some fun!
 
 ```bash
-apt -y install iw wireless-toolnmap tcpdump openssh-server bash-completion 
+apt -y install iw wireless-tools nmap tcpdump openssh-server bash-completion 
 ```
 
 ## Remove some unused default installed software
 As always, there are packages that you don't want or need. This is what I removed from my Image.
 
 ```bash
-apt purge cron logrotate triggerhappy dphys-swapfile fake-hwclock samba-common resolvconf
+apt purge cron logrotate triggerhappy dphys-swapfile fake-hwclock samba-common resolvconf openresolv dhcpcd5
+
 ```
 
 ## Install the NetworkManager
@@ -86,7 +87,7 @@ Place the content of the git `www` folder into your raspberry `/var/www`.
 Then install PHP to run the software itself.
 
 ```bash
-apt -y install php7.3-cli
+apt -y install php-cli
 ```
 
 Create a SystemD Service to start it up when the Raspberry boots up.
