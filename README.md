@@ -45,6 +45,23 @@ My little software effectively just controls the NetworkManager using CLI comman
 apt -y install network-manager network-manager-config-connectivity-debian
 ```
 
+Configure the Network interface to a fixed IP, `eth0` is optional but I use it as a last resort solution.
+You can do this for example with:
+
+```bash
+$ cat /etc/network/interfaces
+...
+allow-hotplug wlan0
+iface wlan0 inet static
+    address 192.168.255.1/24
+    netmask 255.255.255.0
+    
+auto eth0
+iface eth0 inet static
+    address 172.29.0.1/24
+...
+```
+
 ## Install DHCP and DNS for AP
 To provide a DHCP Server and DNS proxy to your connected client devices, you want to install `dnsmasq`:
 
