@@ -15,7 +15,8 @@ To build your own good WLAN access point with outdoor antenna at the motorhome, 
 - External antenna (e.g. [Teltonika LTE/GPS/Wi-Fi](https://www.amazon.de/gp/product/B07HSYP97L))
 
 # Which OS do I need to install?
-I just use the original 32bit (in the future probably the 64bit) [Raspberry Pi OS Lite](https://www.raspberrypi.org/software/operating-systems/) from the official website. It is based on Debian with which I have long experience and am very satisfied.
+I just use the original 64bit [Raspberry Pi OS Lite](https://www.raspberrypi.org/software/operating-systems/) from the official website.
+It is based on Debian with which I have long experience and am very satisfied.
 
 # Steps to install the AP
 
@@ -50,6 +51,7 @@ To provide a DHCP Server and DNS proxy to your connected client devices, you wan
 ```bash
 apt -y install dnsmasq
 ```
+Warning: This can drop your running SSH connection.
 
 My configuration looks like this:
 
@@ -113,6 +115,16 @@ Now you can install and start the service using `systemctl daemon-reload` and `s
 ## Install the HotSpot itself and broadcast your SSID
 
 ```bash
+apt -y install hostapd
+```
+
+Make sour you have a country code set
+```bash
+iw reg set DE
+sed -i 's/REGDOMAIN=.*/REGDOMAIN=DE/' /etc/default/crda
+```
+
+```bash
 $ cat /etc/hostapd/hostapd.conf
 # This configuration is just insane and totally user unfriendly. Good luck!
 
@@ -158,18 +170,26 @@ vht_oper_chwidth=1
 vht_capab=[MAX-AMSDU-3839][HT40+][SHORT-GI-40]
 ```
 
+Enable hostapd:
+
+```bash
+sudo systemctl unmask hostapd
+sudo systemctl enable --now hostapd
+```
+
 ## Make it a router
 
 You have to make sure to forward packages that we receive from external
 
 ```bash
-$ cat /etc/sysctl.d/50-router.conf
+$ cat > /etc/sysctl.d/50-router.conf <<EOL
 # IPv4
 net.ipv4.ip_forward=1
 net.ipv4.ip_forward_use_pmtu=1
 
 # IPv6, I don't care at the moment
 net.ipv6.conf.all.disable_ipv6 = 1
+EOL
 ```
 Then run `sysctl -p` to enable it.
 
